@@ -1,0 +1,171 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ----------------------------------------------------------------
+   Brand palette — black / crimson-red / grey / white
+   Light theme is the default; .dark overrides below.
+---------------------------------------------------------------- */
+:root {
+  --color-canvas: #ffffff;
+  --color-canvas-alt: #f5f4f3;
+  --color-surface: #ffffff;
+  --color-ink: #131315;
+  --color-ink-muted: #5a5a62;
+  --color-line: #e6e4e2;
+  --color-crimson: #a3121c;
+  --color-crimson-strong: #7d0e15;
+  /* Fixed brand-black surface (hero/footer/etc.) — intentionally does NOT
+     invert with the theme, so it stays a dark, high-contrast band in both
+     light and dark mode. */
+  --color-charcoal: #0e0e10;
+  --overlay-scrim: rgba(10, 9, 9, 0.62);
+}
+
+.dark {
+  --color-canvas: #0b0b0c;
+  --color-canvas-alt: #141416;
+  --color-surface: #18181b;
+  --color-ink: #f3f2f1;
+  --color-ink-muted: #a6a3a0;
+  --color-line: #2a2a2d;
+  --color-crimson: #d6293a;
+  --color-crimson-strong: #ef3b4c;
+  --overlay-scrim: rgba(0, 0, 0, 0.72);
+}
+
+@theme inline {
+  --color-canvas: var(--color-canvas);
+  --color-canvas-alt: var(--color-canvas-alt);
+  --color-surface: var(--color-surface);
+  --color-ink: var(--color-ink);
+  --color-ink-muted: var(--color-ink-muted);
+  --color-line: var(--color-line);
+  --color-crimson: var(--color-crimson);
+  --color-crimson-strong: var(--color-crimson-strong);
+  --color-charcoal: var(--color-charcoal);
+  --font-serif: var(--font-playfair);
+  --font-sans: var(--font-inter);
+}
+
+* {
+  border-color: var(--color-line);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  transition: background-color 0.35s ease, color 0.35s ease;
+}
+
+/* Layered (not global) so Tailwind utility classes — e.g. an explicit
+   font-sans on a heading — can still override this default per element. */
+@layer base {
+  h1, h2, h3, h4,
+  .font-serif {
+    font-family: var(--font-serif), Georgia, serif;
+  }
+}
+
+::selection {
+  background: var(--color-crimson);
+  color: #fff;
+}
+
+/* ----------------------------------------------------------------
+   Preloader
+---------------------------------------------------------------- */
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-charcoal);
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+.dark .preloader {
+  background: #08080a;
+}
+.preloader[data-hidden="true"] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.preloader-mark {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.preloader-word {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(1.5rem, 4vw, 2.4rem);
+  letter-spacing: 0.08em;
+  color: #f4f4f5;
+  opacity: 0;
+  animation: preloaderFade 1.9s ease forwards;
+}
+
+.preloader-bar {
+  width: 120px;
+  height: 2px;
+  background: rgba(244, 244, 245, 0.18);
+  overflow: hidden;
+  border-radius: 999px;
+}
+.preloader-bar::after {
+  content: "";
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: var(--color-crimson);
+  transform: translateX(-100%);
+  animation: preloaderBar 1.7s ease forwards;
+}
+
+@keyframes preloaderFade {
+  0% { opacity: 0; transform: translateY(6px); }
+  25% { opacity: 1; transform: translateY(0); }
+  85% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes preloaderBar {
+  0% { transform: translateX(-100%); }
+  70% { transform: translateX(0); }
+  100% { transform: translateX(0); }
+}
+
+/* ----------------------------------------------------------------
+   Shared motion utilities
+---------------------------------------------------------------- */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up {
+  animation: fadeUp 0.7s ease both;
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .preloader-word,
+  .preloader-bar::after,
+  .animate-fade-up {
+    animation: none !important;
+  }
+}
